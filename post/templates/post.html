@@ -1,0 +1,34 @@
+{% extends 'index.html' %}
+
+
+
+
+{% block content %}
+    {% load static %}
+ <link rel="stylesheet" href="{% static 'post.css' %}">
+
+    <div class="slider">
+        <div class="slides">
+            {% for img in post.get_pictures %}
+            <div class="slide"><img src="{{ img.image.url}}" alt="Image 1"></div>
+            {% endfor %}
+        </div>
+        <button class="prev" onclick="prevSlide()">&#10094;</button>
+        <button class="next" onclick="nextSlide()">&#10095;</button>
+    </div>
+    <div class="blockpost">
+    <h2>{{ post.title }}</h2>
+    <span>{{ post.create_by }}</span>
+    <span>{{ post.datetime }}</span>
+    <pre>
+        {{ post.discription }}
+    </pre>
+
+    </div>
+
+    <script src="{% static 'slider.js' %}"></script>
+
+
+
+
+{% endblock %}

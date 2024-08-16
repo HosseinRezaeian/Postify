@@ -1,0 +1,131 @@
+{% extends 'index.html' %}
+
+{% block content %}
+    {% load static %}
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        a {
+            color: #111111;
+            text-decoration: underline;
+        }
+
+        .co_red {
+            color: red;
+        }
+    </style>
+    <link rel="stylesheet" href="{% static 'posts.css' %}">
+    <div class="posts">
+        {% for post in posts %}
+
+            <div class="card">
+
+                <div class="card-header">
+                    {% if post.get_pictures_one %}
+                        <img src="{{ post.get_pictures_one.image.url }}" alt="city"/>
+                    {% endif %}
+                </div>
+                <div class="card-body" id="{{ post.slug }}">
+                    <a href="{% url 'postview'  post.slug %}">
+                        <h4>
+                            {{ post.title }}
+                        </h4>
+                    </a>
+                    <p>
+                        {{ post.discription }}
+                    </p>
+
+                    <div class="user">
+                        <div class="user-info">
+                            {% if user.is_authenticated %}
+                                {% with 0 as check %}
+                                {% for li in likes %}
+                                    {% if li.post.slug == post.slug %}
+                                        {% if li.like == True %}
+                                            {{ 1|check }}
+                                            <i onclick="myfunc('like','{{ post.slug }}')" class=" co_red fa-regular like fa-thumbs-up"></i>
+                                            <i onclick="myfunc('dislike','{{ post.slug }}')" class="fa-regular dislike fa-thumbs-down"></i>
+                                        {% elif li.like == False %}
+                                            {{ 1|check }}
+                                            <i onclick="myfunc('like','{{ post.slug }}')" class="fa-regular like fa-thumbs-up"></i>
+                                            <i onclick="myfunc('dislike','{{ post.slug }}')" class="co_red fa-regular dislike fa-thumbs-down"></i>
+                                            {% else %}
+                                            {{ 1|check }}
+                                            <i onclick="myfunc('like','{{ post.slug }}')" class="fa-regular like fa-thumbs-up"></i>
+                                            <i onclick="myfunc('dislike','{{ post.slug }}')" class="fa-regular dislike fa-thumbs-down"></i>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                                    {% if check == 0 %}
+                                            <i onclick="myfunc('like','{{ post.slug }}')" class="fa-regular like fa-thumbs-up"></i>
+                                            <i onclick="myfunc('dislike','{{ post.slug }}')" class="fa-regular dislike fa-thumbs-down"></i>
+                                    {% endif %}
+                                {% endwith %}
+                            {% endif %}
+                            <h5>{{ post.create_by.username }}</h5>
+                            <small>{{ post.datetime }}</small>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        {% endfor %}
+    </div>
+
+    <script src="{% static 'jquery.js' %}"></script>
+
+
+
+    <script>
+
+        function myfunc(type, slug) {
+
+            $.ajax({
+                url: "{% url 'like_ajax_view' %}",
+                type: "POST",
+                data: {
+                    slug: slug,
+                    type: type,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function (response) {
+                    console.log("Success:", response['like']);
+                    let res_like = response['like'];
+                    var res_slug = response['slug'];
+                    if (res_like == true) {
+                        console.log("this is good");
+                        let selector_dislike = '#' + res_slug + ' .dislike';
+                        let selector_like = '#' + res_slug + ' .like';
+
+                        $(selector_like).css('color', 'red');
+                        $(selector_dislike).css('color', 'black');
+                    } else if (res_like == false) {
+
+                        console.log("this is good");
+                        let selector_dislike = '#' + res_slug + ' .dislike';
+                        let selector_like = '#' + res_slug + ' .like';
+
+                        $(selector_dislike).css('color', 'red');
+                        $(selector_like).css('color', 'black');
+
+                    } else if (res_like == null) {
+                        let selector_dislike = '#' + res_slug + ' .dislike';
+                        let selector_like = '#' + res_slug + ' .like';
+
+                        $(selector_dislike).css('color', 'black');
+                        $(selector_like).css('color', 'black');
+                    }
+
+
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error:", xhr.responseText);
+                }
+            });
+        }
+
+    </script>
+
+{% endblock %}

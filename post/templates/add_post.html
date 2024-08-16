@@ -1,0 +1,19 @@
+{% extends 'index.html' %}
+
+{% block content %}
+    <h1>Create Blog Post</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ blog_post_form.as_p }}
+        <h2>Upload Pictures</h2>
+        {{ formset.management_form }}
+        {% for form in formset %}
+            <div class="form-group">
+                {{ form.image.label_tag }} {{ form.image }}<br>
+                {{ form.description.label_tag }} {{ form.description }}
+            </div>
+        {% endfor %}
+        <button type="submit">Save</button>
+    </form>
+
+{% endblock %}
