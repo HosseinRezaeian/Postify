@@ -17,54 +17,50 @@
     </style>
     <link rel="stylesheet" href="{% static 'posts.css' %}">
     <div class="posts">
-        {% for post in posts %}
+        {% for item in posts_with_likes %}
 
             <div class="card">
 
                 <div class="card-header">
-                    {% if post.get_pictures_one %}
-                        <img src="{{ post.get_pictures_one.image.url }}" alt="city"/>
+                    {% if item.post.get_pictures_one %}
+                        <img src="{{ item.post.get_pictures_one.image.url }}" alt="city"/>
                     {% endif %}
                 </div>
-                <div class="card-body" id="{{ post.slug }}">
-                    <a href="{% url 'postview'  post.slug %}">
+                <div class="card-body" id="{{ item.post.slug }}">
+                    <a href="{% url 'postview'  item.post.slug %}">
                         <h4>
-                            {{ post.title }}
+                            {{ item.post.title }}
                         </h4>
                     </a>
                     <p>
-                        {{ post.discription }}
+                        {{ item.post.discription }}
                     </p>
 
                     <div class="user">
                         <div class="user-info">
                             {% if user.is_authenticated %}
-                                {% with 0 as check %}
-                                {% for li in likes %}
-                                    {% if li.post.slug == post.slug %}
-                                        {% if li.like == True %}
-                                            {{ 1|check }}
-                                            <i onclick="myfunc('like','{{ post.slug }}')" class=" co_red fa-regular like fa-thumbs-up"></i>
-                                            <i onclick="myfunc('dislike','{{ post.slug }}')" class="fa-regular dislike fa-thumbs-down"></i>
-                                        {% elif li.like == False %}
-                                            {{ 1|check }}
-                                            <i onclick="myfunc('like','{{ post.slug }}')" class="fa-regular like fa-thumbs-up"></i>
-                                            <i onclick="myfunc('dislike','{{ post.slug }}')" class="co_red fa-regular dislike fa-thumbs-down"></i>
-                                            {% else %}
-                                            {{ 1|check }}
-                                            <i onclick="myfunc('like','{{ post.slug }}')" class="fa-regular like fa-thumbs-up"></i>
-                                            <i onclick="myfunc('dislike','{{ post.slug }}')" class="fa-regular dislike fa-thumbs-down"></i>
-                                        {% endif %}
-                                    {% endif %}
-                                {% endfor %}
-                                    {% if check == 0 %}
-                                            <i onclick="myfunc('like','{{ post.slug }}')" class="fa-regular like fa-thumbs-up"></i>
-                                            <i onclick="myfunc('dislike','{{ post.slug }}')" class="fa-regular dislike fa-thumbs-down"></i>
-                                    {% endif %}
-                                {% endwith %}
+
+                                {% if item.user_like_state == True %}
+                                    <i onclick="myfunc('like','{{ item.post.slug }}')"
+                                       class="fa-regular like co_red fa-thumbs-up"></i>
+                                    <i onclick="myfunc('dislike','{{ item.post.slug }}')"
+                                       class="fa-regular dislike fa-thumbs-down"></i>
+
+                                {% elif item.user_like_state == False %}
+                                <i onclick="myfunc('like','{{ item.post.slug }}')"
+                                   class="fa-regular like fa-thumbs-up"></i>
+                                <i onclick="myfunc('dislike','{{ item.post.slug }}')"
+                                   class="fa-regular dislike co_red fa-thumbs-down"></i>
+
+                                {% else %}
+                                <i onclick="myfunc('like','{{ item.post.slug }}')"
+                                   class="fa-regular like fa-thumbs-up"></i>
+                                <i onclick="myfunc('dislike','{{ item.post.slug }}')"
+                                   class="fa-regular dislike fa-thumbs-down"></i>
+                                {% endif %}
                             {% endif %}
-                            <h5>{{ post.create_by.username }}</h5>
-                            <small>{{ post.datetime }}</small>
+                            <h5>{{ item.post.create_by.username }}</h5>
+                            <small>{{ item.post.datetime }}</small>
                         </div>
                     </div>
                 </div>

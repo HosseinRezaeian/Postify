@@ -20,11 +20,8 @@ class BlogPost(models.Model):
         return False
 
     def this_user_state_like(self, user):
-        like = self.likes.filter(post=self, user=user)
-        if like.exists():
-            return like
-
-        return
+        like = self.likes.filter(user=user).first()
+        return like.like if like else None
 
 
 class Picture(models.Model):

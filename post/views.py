@@ -15,24 +15,22 @@ from django.shortcuts import render
 class postsView(View):
     def get(self, request):
         posts = BlogPost.objects.all()
-        if request.user.is_authenticated:
-            likes = Like.objects.filter(user=request.user)
-        else:
-            likes = None
 
-        posts = BlogPost.objects.annotate(
-            liked=Case(
-                When(like__user=request.user, like__like=True, then=Value(True)),
-                default=Value(False),
-                output_field=BooleanField(),
-            ),
-            disliked=Case(
-                When(like__user=request.user, like__like=False, then=Value(True)),
-                default=Value(False),
-                output_field=BooleanField(),
-            ),
-        ).prefetch_related('like_set')
-        return render(request, 'posts.html', {'posts': posts, 'likes': likes})
+        # Prepare a list to hold posts with their like status
+        posts_with_likes = []
+
+        for post in posts:
+            user_like_state = post.this_user_state_like(request.user)
+            posts_with_likes.append({
+                'post': post,
+                'user_like_state': user_like_state,
+            })
+
+            context = {
+                'posts_with_likes': posts_with_likes,
+            }
+
+        return render(request, 'posts.html',context)
 
 
 class AddPost(View):
